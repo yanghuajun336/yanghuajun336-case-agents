@@ -1,7 +1,8 @@
 """Client transport layer for Case Agent.
 
-Defines a protocol-level transport interface and a concrete HTTP
-implementation so the CLI (and future TUI) can talk to a remote server.
+Defines a protocol-level transport interface and concrete implementations
+so the CLI (and future TUI) can talk to a remote server or drive the
+workflow locally.
 
 Usage (HTTP client against a running server):
     transport = HttpTransport("http://127.0.0.1:8765")
@@ -9,12 +10,14 @@ Usage (HTTP client against a running server):
     transport.ingest_message(sid, "SSH 连接失败")
     print(transport.get_draft(sid))
 
+Usage (in-process, no network):
+    transport = InProcessTransport()
+    sid = transport.new_session(author="alice").session_id
+
 Future integration notes
 ------------------------
 * Add ``WebSocketTransport`` for streaming/push events.
-* Add ``InProcessTransport`` to drive ``CaseWorkflow`` locally (no network
-  hop needed when client and server run in the same process).
-* Add authentication headers via ``auth_token`` parameter.
+* Add authentication headers via ``auth_token`` parameter to HttpTransport.
 """
 
 from __future__ import annotations

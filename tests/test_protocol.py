@@ -26,7 +26,7 @@ class TestProtocolMessages(unittest.TestCase):
         self.assertEqual(req.session_id, "s1")
         self.assertEqual(req.text, "SSH 失败")
 
-    def test_register_image_request_serialisation(self):
+    def test_register_image_request_serialization(self):
         from dataclasses import asdict
 
         req = RegisterImageRequest(
