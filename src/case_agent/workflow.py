@@ -84,7 +84,7 @@ class CaseWorkflow:
 
     def is_ready_for_finalization(self) -> bool:
         session = self._ensure_session()
-        return all(bool(getattr(session.draft, field).strip()) for field in self.REQUIRED_FIELDS)
+        return all(bool((getattr(session.draft, field) or "").strip()) for field in self.REQUIRED_FIELDS)
 
     def finalize_session(self) -> CaseSession:
         session = self._ensure_session()

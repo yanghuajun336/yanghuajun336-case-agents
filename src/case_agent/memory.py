@@ -34,7 +34,7 @@ def build_case_memory_payload(draft: CaseDraft, case_id: str | None = None) -> S
             draft.background,
             draft.root_cause,
             draft.solution,
-            " ".join(image.get("summary", "") for image in image_summaries),
+            " ".join(image.summary for image in draft.images if image.summary),
         ]
         if part
     )

@@ -61,16 +61,18 @@ def run_cli() -> None:
                 print(f"   摘要: {hit.summary}")
             continue
         if raw == "/draft":
-            print(json.dumps(workflow.session.draft.as_dict(), ensure_ascii=False, indent=2))
+            session = workflow.session or workflow.start_new_session()
+            print(json.dumps(session.draft.as_dict(), ensure_ascii=False, indent=2))
             continue
         if raw == "/finalize":
+            session = workflow.session or workflow.start_new_session()
             try:
                 workflow.finalize_session()
             except ValueError as exc:
                 print(f"当前草稿未完成: {exc}")
                 continue
-            case_payload = draft_to_case_assistant_payload(workflow.session.draft)
-            memory_payload = build_case_memory_payload(workflow.session.draft)
+            case_payload = draft_to_case_assistant_payload(session.draft)
+            memory_payload = build_case_memory_payload(session.draft)
             print("case-assistant payload:")
             print(json.dumps(case_payload, ensure_ascii=False, indent=2))
             print("\nstructured memory payload:")
