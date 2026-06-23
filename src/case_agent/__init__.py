@@ -8,11 +8,15 @@ from .models import (
     StructuredCaseMemoryPayload,
     WorkflowStatus,
 )
+from .transport import CaseAgentTransportError, HttpTransport, InProcessTransport
 
 __all__ = [
     "CaseDraft",
     "CaseSession",
+    "CaseAgentTransportError",
+    "HttpTransport",
     "ImageAttachment",
+    "InProcessTransport",
     "SimilarCaseHit",
     "StructuredCaseMemoryPayload",
     "WorkflowStatus",
