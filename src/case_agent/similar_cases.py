@@ -18,6 +18,9 @@ class SimilarCaseRecommender(Protocol):
 class MockSimilarCaseRecommender:
     """Mock implementation used by MVP workflow and CLI demo."""
 
+    CONTEXT_BONUS = 0.02
+    MAX_SCORE = 0.99
+
     _seed_hits = [
         SimilarCaseHit(
             case_id="case-ssh-vrf-001",
@@ -49,6 +52,6 @@ class MockSimilarCaseRecommender:
     ]
 
     def recommend(self, problem_text: str, image_summaries: list[str], top_k: int = 3) -> list[SimilarCaseHit]:
-        context_bonus = 0.02 if image_summaries else 0.0
-        hits = [replace(hit, score=min(hit.score + context_bonus, 0.99)) for hit in self._seed_hits[:top_k]]
+        context_bonus = self.CONTEXT_BONUS if image_summaries else 0.0
+        hits = [replace(hit, score=min(hit.score + context_bonus, self.MAX_SCORE)) for hit in self._seed_hits[:top_k]]
         return sorted(hits, key=lambda item: item.score, reverse=True)[:top_k]

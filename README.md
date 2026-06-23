@@ -37,7 +37,7 @@ Case Agent 是一个面向问题处理与案例沉淀的应用层助手，构建
 ## 运行
 
 ```bash
-cd /home/runner/work/yanghuajun336-case-agents/yanghuajun336-case-agents
+cd <project-root>
 PYTHONPATH=src python -m case_agent.cli
 ```
 

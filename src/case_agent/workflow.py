@@ -14,6 +14,7 @@ class CaseWorkflow:
     """Session workflow skeleton for future hello-agent runtime integration."""
 
     REQUIRED_FIELDS = ["title", "author", "product_line", "background", "root_cause", "solution", "summary"]
+    MAX_AUTO_SUMMARY_LENGTH = 120
 
     def __init__(self, recommender: SimilarCaseRecommender | None = None) -> None:
         self.recommender = recommender or MockSimilarCaseRecommender()
@@ -21,7 +22,7 @@ class CaseWorkflow:
 
     def start_new_session(self) -> CaseSession:
         session_id = f"session-{uuid.uuid4().hex[:8]}"
-        self.session = CaseSession(session_id=session_id, status=WorkflowStatus.INTAKE)
+        self.session = CaseSession(session_id=session_id, status=WorkflowStatus.INIT)
         return self.session
 
     def ingest_user_message(self, text: str) -> CaseSession:
@@ -31,10 +32,12 @@ class CaseWorkflow:
             return session
 
         session.messages.append(cleaned)
+        if session.status == WorkflowStatus.INIT:
+            session.status = WorkflowStatus.INTAKE
         if not session.draft.background:
             session.draft.background = cleaned
         if not session.draft.summary:
-            session.draft.summary = cleaned[:120]
+            session.draft.summary = cleaned[: self.MAX_AUTO_SUMMARY_LENGTH]
 
         session.status = WorkflowStatus.SIMILAR_CASE_RECOMMENDING
         self.refresh_similar_cases()
@@ -84,7 +87,7 @@ class CaseWorkflow:
 
     def is_ready_for_finalization(self) -> bool:
         session = self._ensure_session()
-        return all(bool((getattr(session.draft, field) or "").strip()) for field in self.REQUIRED_FIELDS)
+        return all(self._field_is_populated(field) for field in self.REQUIRED_FIELDS)
 
     def finalize_session(self) -> CaseSession:
         session = self._ensure_session()
@@ -109,3 +112,7 @@ class CaseWorkflow:
     def _touch(self) -> None:
         session = self._ensure_session()
         session.updated_at = datetime.now(timezone.utc).isoformat()
+
+    def _field_is_populated(self, field_name: str) -> bool:
+        session = self._ensure_session()
+        return bool((getattr(session.draft, field_name) or "").strip())

@@ -32,6 +32,12 @@ class TestCaseWorkflow(unittest.TestCase):
         self.assertEqual(len(workflow.session.images), 1)
         self.assertEqual(len(workflow.session.draft.images), 1)
 
+    def test_os_can_be_overridden(self):
+        workflow = CaseWorkflow()
+        workflow.start_new_session()
+        workflow.update_case_draft(os="openEuler")
+        self.assertEqual(workflow.session.draft.os, "openEuler")
+
 
 if __name__ == "__main__":
     unittest.main()
