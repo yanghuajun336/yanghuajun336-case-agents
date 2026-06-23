@@ -242,13 +242,13 @@ class InProcessTransport:
             memory_payload=self._build_memory(draft).as_dict(),
         )
 
-    def _get_workflow(self, session_id: str):
+    def _get_workflow(self, session_id: str) -> "CaseWorkflow":
         workflow = self._workflows.get(session_id)
         if workflow is None:
             raise CaseAgentTransportError(404, f"Session '{session_id}' not found")
         return workflow
 
-    def _state(self, workflow) -> SessionStateResponse:
+    def _state(self, workflow: "CaseWorkflow") -> SessionStateResponse:
         session = workflow.session
         assert session is not None
         draft = session.draft

@@ -258,7 +258,7 @@ class _Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(encoded)
 
-    def log_message(self, fmt: str, *args: Any) -> None:  # noqa: ANN001
+    def log_message(self, fmt: str, *args: object) -> None:
         # Suppress BaseHTTPRequestHandler's per-request stderr output; the MVP
         # has no logging framework yet.  Add structured logging here in M1.
         pass
