@@ -21,6 +21,7 @@ class TestCaseWorkflow(unittest.TestCase):
             summary="问题已恢复",
         )
         self.assertTrue(workflow.is_ready_for_finalization())
+        self.assertEqual(workflow.session.draft.os, "EulerOS")
 
     def test_register_image_updates_draft(self):
         workflow = CaseWorkflow()

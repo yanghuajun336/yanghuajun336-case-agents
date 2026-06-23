@@ -13,7 +13,7 @@ from .similar_cases import MockSimilarCaseRecommender, SimilarCaseRecommender
 class CaseWorkflow:
     """Session workflow skeleton for future hello-agent runtime integration."""
 
-    REQUIRED_FIELDS = ["title", "author", "os", "product_line", "background", "root_cause", "solution", "summary"]
+    REQUIRED_FIELDS = ["title", "author", "product_line", "background", "root_cause", "solution", "summary"]
 
     def __init__(self, recommender: SimilarCaseRecommender | None = None) -> None:
         self.recommender = recommender or MockSimilarCaseRecommender()

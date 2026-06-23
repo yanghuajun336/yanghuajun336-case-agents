@@ -51,8 +51,4 @@ class MockSimilarCaseRecommender:
     def recommend(self, problem_text: str, image_summaries: list[str], top_k: int = 3) -> list[SimilarCaseHit]:
         context_bonus = 0.02 if image_summaries else 0.0
         hits = [replace(hit, score=min(hit.score + context_bonus, 0.99)) for hit in self._seed_hits[:top_k]]
-        if problem_text:
-            lowered = problem_text.lower()
-            if "ssh" in lowered:
-                return hits
-        return sorted(hits, key=lambda item: item.score, reverse=True)
+        return sorted(hits, key=lambda item: item.score, reverse=True)[:top_k]

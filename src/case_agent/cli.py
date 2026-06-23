@@ -79,7 +79,7 @@ def run_cli() -> None:
             print(json.dumps(memory_payload.as_dict(), ensure_ascii=False, indent=2))
             continue
 
-        # 默认按自然语言消息处理
+        # Fallback: treat input as natural-language message.
         session = workflow.ingest_user_message(raw)
         print(f"已处理自然输入。当前状态: {session.status.value}")
 
