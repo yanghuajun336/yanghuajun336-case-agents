@@ -259,7 +259,8 @@ class _Handler(BaseHTTPRequestHandler):
         self.wfile.write(encoded)
 
     def log_message(self, fmt: str, *args: Any) -> None:  # noqa: ANN001
-        # Suppress default noisy access log; replace with proper logging later.
+        # Suppress BaseHTTPRequestHandler's per-request stderr output; the MVP
+        # has no logging framework yet.  Add structured logging here in M1.
         pass
 
 

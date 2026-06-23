@@ -11,18 +11,6 @@ with an SSE or WebSocket event envelope as needed.
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass, field
-from typing import Any
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-def _as_dict(obj: Any) -> dict:
-    """Recursively convert dataclasses to plain dicts."""
-    if hasattr(obj, "__dataclass_fields__"):
-        return asdict(obj)
-    return obj  # type: ignore[return-value]
 
 
 # ---------------------------------------------------------------------------

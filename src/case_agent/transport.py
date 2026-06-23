@@ -187,19 +187,19 @@ class InProcessTransport:
     def new_session(self, author: str = "", os: str = "EulerOS") -> NewSessionResponse:
         from .workflow import CaseWorkflow
 
-        wf = CaseWorkflow()
-        wf.start_new_session()
-        assert wf.session is not None
+        workflow = CaseWorkflow()
+        workflow.start_new_session()
+        assert workflow.session is not None
         if author:
-            wf.session.draft.author = author
-        wf.session.draft.os = os
-        self._workflows[wf.session.session_id] = wf
-        return NewSessionResponse(session_id=wf.session.session_id, status=wf.session.status.value)
+            workflow.session.draft.author = author
+        workflow.session.draft.os = os
+        self._workflows[workflow.session.session_id] = workflow
+        return NewSessionResponse(session_id=workflow.session.session_id, status=workflow.session.status.value)
 
     def ingest_message(self, session_id: str, text: str) -> SessionStateResponse:
-        wf = self._get_wf(session_id)
-        wf.ingest_user_message(text)
-        return self._state(wf)
+        workflow = self._get_workflow(session_id)
+        workflow.ingest_user_message(text)
+        return self._state(workflow)
 
     def register_image(
         self,
@@ -209,51 +209,51 @@ class InProcessTransport:
         mime_type: str = "image/png",
         linked_sections: list[str] | None = None,
     ) -> SessionStateResponse:
-        wf = self._get_wf(session_id)
-        wf.register_image_attachment(file_name, summary, mime_type, linked_sections)
-        return self._state(wf)
+        workflow = self._get_workflow(session_id)
+        workflow.register_image_attachment(file_name, summary, mime_type, linked_sections)
+        return self._state(workflow)
 
     def update_draft(self, session_id: str, fields: dict) -> SessionStateResponse:
-        wf = self._get_wf(session_id)
-        wf.update_case_draft(**fields)
-        return self._state(wf)
+        workflow = self._get_workflow(session_id)
+        workflow.update_case_draft(**fields)
+        return self._state(workflow)
 
     def get_draft(self, session_id: str) -> DraftResponse:
-        wf = self._get_wf(session_id)
-        assert wf.session is not None
-        return DraftResponse(session_id=session_id, draft=wf.session.draft.as_dict())
+        workflow = self._get_workflow(session_id)
+        assert workflow.session is not None
+        return DraftResponse(session_id=session_id, draft=workflow.session.draft.as_dict())
 
     def get_similar(self, session_id: str) -> SimilarCasesResponse:
-        wf = self._get_wf(session_id)
-        hits = wf.refresh_similar_cases()
+        workflow = self._get_workflow(session_id)
+        hits = workflow.refresh_similar_cases()
         return SimilarCasesResponse(
             session_id=session_id,
             hits=[{"case_id": h.case_id, "title": h.title, "score": h.score, "summary": h.summary} for h in hits],
         )
 
     def finalize(self, session_id: str) -> FinalizeResponse:
-        wf = self._get_wf(session_id)
-        wf.finalize_session()
-        assert wf.session is not None
-        draft = wf.session.draft
+        workflow = self._get_workflow(session_id)
+        workflow.finalize_session()
+        assert workflow.session is not None
+        draft = workflow.session.draft
         return FinalizeResponse(
             session_id=session_id,
             case_assistant_payload=self._draft_to_payload(draft),
             memory_payload=self._build_memory(draft).as_dict(),
         )
 
-    def _get_wf(self, session_id: str):
-        wf = self._workflows.get(session_id)
-        if wf is None:
+    def _get_workflow(self, session_id: str):
+        workflow = self._workflows.get(session_id)
+        if workflow is None:
             raise CaseAgentTransportError(404, f"Session '{session_id}' not found")
-        return wf
+        return workflow
 
-    def _state(self, wf) -> SessionStateResponse:
-        session = wf.session
+    def _state(self, workflow) -> SessionStateResponse:
+        session = workflow.session
         assert session is not None
         draft = session.draft
-        filled = [f for f in wf.REQUIRED_FIELDS if (getattr(draft, f) or "").strip()]
-        missing = [f for f in wf.REQUIRED_FIELDS if not (getattr(draft, f) or "").strip()]
+        filled = [f for f in workflow.REQUIRED_FIELDS if (getattr(draft, f) or "").strip()]
+        missing = [f for f in workflow.REQUIRED_FIELDS if not (getattr(draft, f) or "").strip()]
         return SessionStateResponse(
             session_id=session.session_id,
             status=session.status.value,
